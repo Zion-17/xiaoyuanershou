@@ -1,0 +1,18 @@
+.page { display: flex; height: 100vh; }
+.side {
+  width: 180rpx; background: #F6F7F9; overflow-y: auto;
+}
+.side-item {
+  padding: 28rpx 0; text-align: center; font-size: 24rpx; color: #555;
+  border-left: 6rpx solid transparent;
+}
+.side-item.on { background: #fff; color: #00B578; border-left-color: #00B578; font-weight: 600; }
+.side-item .ico { display: block; font-size: 40rpx; margin-bottom: 6rpx; }
+
+.main { flex: 1; padding: 20rpx; background: #fff; }
+.main-title { font-size: 30rpx; font-weight: 700; margin-bottom: 20rpx; }
+.g-card { display: flex; margin-bottom: 24rpx; }
+.g-card .cover { width: 140rpx; height: 140rpx; margin-right: 16rpx; font-size: 60rpx; flex-shrink: 0; border-radius: 12rpx; }
+.t { font-size: 26rpx; margin-bottom: 10rpx; }
+.row { display: flex; align-items: center; margin-bottom: 8rpx; gap: 12rpx; }
+.empty { text-align: center; padding: 100rpx 0; }

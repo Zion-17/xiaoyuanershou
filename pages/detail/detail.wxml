@@ -1,0 +1,57 @@
+<!--pages/detail/detail.wxml-->
+<view class="page" wx:if="{{g}}">
+  <image wx:if="{{g.image || g.imageBase64}}" class="hero-img" src="{{g.image || g.imageBase64}}" mode="aspectFill" />
+  <view wx:else class="hero" style="background:linear-gradient(135deg,{{g.grad[0]}},{{g.grad[1]}});">
+    <text class="hero-emoji">{{g.emoji}}</text>
+  </view>
+  <view class="hero-cat">{{categoryName}}</view>
+
+  <view class="block card">
+    <view class="price-row">
+      <text class="price big">{{g.price}}</text>
+      <text class="origin">¥{{g.originPrice}}</text>
+      <text class="tag tag-green" style="margin-left:auto;">{{g.condition}}</text>
+    </view>
+    <view class="title">{{g.title}}</view>
+    <view class="meta muted">
+      <text>📍 {{g.location}}</text>
+      <text>{{g.time}}</text>
+    </view>
+  </view>
+
+  <view class="block card">
+    <view class="block-title">商品描述</view>
+    <view class="desc">{{g.desc}}</view>
+  </view>
+
+  <view class="block card seller" bindtap="onSeller">
+    <image wx:if="{{g.seller.avatarImage}}" class="avatar" src="{{g.seller.avatarImage}}" mode="aspectFill" />
+    <view wx:else class="avatar">{{g.seller.avatarEmoji}}</view>
+    <view class="flex-1">
+      <view class="s-name">{{g.seller.name}}</view>
+      <view class="muted">信用分 {{g.seller.credit}} · 已认证用户</view>
+    </view>
+    <text class="chat-link" bindtap="goChat">聊一聊 ›</text>
+  </view>
+
+  <view class="block card tip">
+    🛡️ 平台提醒：请优先选择宿舍/图书馆当面交易，验货后再确认收货。
+  </view>
+
+  <view class="bottom-bar">
+    <block wx:if="{{isOwner}}">
+      <view class="bar-btn ghost" bindtap="editPrice">修改价格</view>
+      <view class="bar-btn ghost" wx:if="{{g.status!=='sold'}}" bindtap="toggleShelf">{{g.status==='on'?'下架':'重新上架'}}</view>
+      <view class="bar-btn primary" bindtap="removeGood">删除</view>
+    </block>
+    <block wx:else>
+      <view class="icon-btn" bindtap="toggleFav">
+        <text class="ico">{{faved ? '★' : '☆'}}</text>
+        <text class="lbl {{faved?'on':''}}">{{faved ? '已收藏' : '收藏'}}</text>
+      </view>
+      <view class="bar-btn ghost" bindtap="goChat">💬 聊一聊</view>
+      <view wx:if="{{canBuy}}" class="bar-btn primary" bindtap="order">立即下单</view>
+      <view wx:else class="bar-btn disabled">{{soldOut ? '已售出' : '已下架'}}</view>
+    </block>
+  </view>
+</view>

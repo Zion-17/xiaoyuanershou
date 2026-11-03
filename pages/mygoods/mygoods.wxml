@@ -1,0 +1,27 @@
+<!--pages/mygoods/mygoods.wxml-->
+<view class="list-page">
+  <view class="empty" wx:if="{{list.length===0}}">
+    <view class="big">📦</view>
+    <view class="muted">你还没有发布任何商品</view>
+    <view class="btn-primary go" bindtap="goPublish">去发布闲置</view>
+  </view>
+
+  <view class="item card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+    <view class="cover" style="background:linear-gradient(135deg,{{item.grad[0]}},{{item.grad[1]}});">{{item.emoji}}</view>
+    <view class="body">
+      <view class="ellipsis-2 title">{{item.title}}</view>
+      <view class="row">
+        <text class="price">{{item.price}}</text>
+        <text class="tag">{{item.condition}}</text>
+      </view>
+      <view class="row-between">
+        <text class="muted">{{item.time}}</text>
+        <text class="status {{item.status}}">{{item.status==='on'?'在售':(item.status==='sold'?'已售出':'已下架')}}</text>
+      </view>
+      <view class="ops">
+        <text class="op" wx:if="{{item.status!=='sold'}}" catchtap="toggleStatus" data-id="{{item.id}}">{{item.status==='on'?'下架':'重新上架'}}</text>
+        <text class="op danger" catchtap="remove" data-id="{{item.id}}">删除</text>
+      </view>
+    </view>
+  </view>
+</view>

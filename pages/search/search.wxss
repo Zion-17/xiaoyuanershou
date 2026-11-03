@@ -1,0 +1,34 @@
+.page { padding-bottom: 40rpx; overflow-x: hidden; }
+.topbar { padding: 16rpx 24rpx; background: #fff; }
+.search-box {
+  background: #F2F3F5; border-radius: 999rpx; padding: 12rpx 24rpx;
+  display: flex; align-items: center;
+}
+.search-box .icon { margin-right: 12rpx; }
+.search-box .inp { flex: 1; font-size: 28rpx; min-width: 0; }
+.search-box .cancel { color: #00B578; font-size: 26rpx; margin-left: 16rpx; flex-shrink: 0; }
+
+.cat-bar { display: flex; flex-wrap: wrap; padding: 16rpx 24rpx 4rpx; background: #fff; }
+.chip {
+  padding: 10rpx 24rpx; border-radius: 999rpx;
+  background: #F2F3F5; font-size: 24rpx; color: #555; margin: 0 16rpx 12rpx 0;
+}
+.chip.on { background: #00B578; color: #fff; }
+
+.filter {
+  display: flex; padding: 16rpx 24rpx; background: #F6F7F9;
+  font-size: 24rpx; color: #555;
+}
+.f-item { margin-right: 30rpx; }
+
+.result-num { padding: 10rpx 24rpx; }
+
+.item { display: flex; margin: 0 24rpx 20rpx; }
+.item .cover { width: 180rpx; height: 180rpx; margin-right: 20rpx; flex-shrink: 0; font-size: 70rpx; }
+.item .body { flex: 1; min-width: 0; }
+.title { font-size: 28rpx; margin-bottom: 8rpx; }
+.desc { color: #999; font-size: 22rpx; margin-bottom: 10rpx; }
+.row { display: flex; align-items: center; }
+
+.empty { text-align: center; padding: 120rpx 0; }
+.empty .big { font-size: 100rpx; margin-bottom: 20rpx; }

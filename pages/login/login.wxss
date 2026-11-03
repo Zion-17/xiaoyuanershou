@@ -1,0 +1,51 @@
+.login { padding: 40rpx 32rpx; min-height: 100vh; background: #F6F7F9; }
+
+.hero { text-align: center; padding: 40rpx 0 40rpx; }
+.logo {
+  width: 140rpx; height: 140rpx; border-radius: 36rpx;
+  background: linear-gradient(135deg, #7EDFA8, #00B578);
+  color: #fff; font-size: 76rpx; line-height: 140rpx;
+  margin: 0 auto 24rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0,181,120,0.2);
+}
+.title { font-size: 44rpx; font-weight: 700; color: #222; }
+.subtitle { color: #999; font-size: 26rpx; margin-top: 12rpx; }
+
+.form {
+  background: #fff; border-radius: 24rpx;
+  padding: 40rpx 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.06);
+}
+.field { margin-bottom: 32rpx; }
+.label { font-size: 26rpx; color: #444; display: block; margin-bottom: 12rpx; font-weight: 500; }
+.input {
+  background: #F6F7F9; border-radius: 12rpx;
+  padding: 24rpx 24rpx;
+  font-size: 30rpx;
+  color: #222;
+  min-height: 80rpx;
+  line-height: 40rpx;
+  box-sizing: border-box;
+}
+
+.tips {
+  display: flex; align-items: flex-start; margin: 10rpx 0 36rpx;
+  font-size: 24rpx; color: #666; line-height: 1.6;
+}
+.checkbox {
+  width: 36rpx; height: 36rpx; border: 2rpx solid #ccc; border-radius: 8rpx;
+  margin-right: 12rpx; margin-top: 4rpx;
+  text-align: center; line-height: 32rpx; font-size: 22rpx; color: #fff;
+  flex-shrink: 0;
+}
+.checkbox.on { background: #00B578; border-color: #00B578; }
+
+.btn-login {
+  background: #00B578; color: #fff; border-radius: 999rpx;
+  font-size: 32rpx; padding: 24rpx 0; text-align: center;
+  font-weight: 500;
+  margin-top: 10rpx;
+}
+.btn-login:active { opacity: 0.85; }
+
+.demo { text-align: center; margin-top: 28rpx; color: #bbb; font-size: 22rpx; }

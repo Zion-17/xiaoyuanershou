@@ -1,0 +1,8 @@
+.list-page { padding: 24rpx; }
+.empty { text-align: center; padding: 160rpx 0; }
+.empty .big { font-size: 100rpx; margin-bottom: 20rpx; }
+.grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
+.g-item { width: 48%; margin-bottom: 20rpx; padding: 16rpx; }
+.g-item .cover { height: 240rpx; margin-bottom: 14rpx; font-size: 90rpx; }
+.g-item .title { font-size: 26rpx; margin-bottom: 12rpx; min-height: 76rpx; }
+.unfav { color: #ccc; font-size: 24rpx; padding: 0 10rpx; }

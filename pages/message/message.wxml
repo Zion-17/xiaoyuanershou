@@ -1,0 +1,19 @@
+<!--pages/message/message.wxml-->
+<view class="page">
+  <view class="empty" wx:if="{{list.length===0}}">
+    <view class="big">💬</view>
+    <view class="muted">暂无会话，去商品详情页聊一聊吧</view>
+  </view>
+  <view class="item card" wx:for="{{list}}" wx:key="id" bindtap="openChat" data-id="{{item.id}}">
+    <image wx:if="{{item.avatarImage}}" class="avatar" src="{{item.avatarImage}}" mode="aspectFill" />
+    <view wx:else class="avatar" style="background:linear-gradient(135deg,{{item.grad[0]}},{{item.grad[1]}});">{{item.avatarEmoji}}</view>
+    <view class="flex-1">
+      <view class="row-between">
+        <text class="name">{{item.with}}</text>
+        <text class="muted">{{item.time}}</text>
+      </view>
+      <view class="ellipsis last">{{item.last}}</view>
+      <view class="goods-tag muted">关于：{{item.goodsTitle}}</view>
+    </view>
+  </view>
+</view>

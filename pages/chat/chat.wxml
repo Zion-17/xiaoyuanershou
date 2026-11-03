@@ -1,0 +1,38 @@
+<!--pages/chat/chat.wxml-->
+<view class="chat" style="{{kbHeight ? 'bottom:' + kbHeight + 'px;' : ''}}">
+  <!-- 顶部当前咨询商品：键盘弹起时容器整体收窄，这条始终钉在顶部 -->
+  <view class="goods-card" wx:if="{{chat.good}}">
+    <view class="goods-main" bindtap="onGoods">
+      <image wx:if="{{chat.avatarImage}}" class="cover" src="{{chat.avatarImage}}" mode="aspectFill" />
+      <view wx:else class="cover">{{chat.avatarEmoji}}</view>
+      <view class="goods-info">
+        <view class="ellipsis-2 g-title">{{chat.good.title}}</view>
+        <view class="g-price">¥{{chat.good.price}} · 点击查看</view>
+      </view>
+    </view>
+    <view class="buy-btn" wx:if="{{chat.canBuy}}" catchtap="onBuy">购买</view>
+  </view>
+
+  <!-- 消息列表：整页纵向 flex，任意分辨率只上下滚动 -->
+  <scroll-view scroll-y class="msgs" scroll-into-view="{{scrollAnchor}}">
+    <block wx:for="{{messages}}" wx:key="localId" wx:for-index="idx">
+      <view class="goods-sep" wx:if="{{item.sep}}">{{item.text}}</view>
+      <block wx:else>
+        <view class="time-bar" wx:if="{{item.showTime}}">{{item.timeText}}</view>
+        <view class="msg-row {{item.mine?'self':''}}" id="msg{{idx}}">
+          <view class="bubble-wrap">
+            <view class="bubble {{item.mine?'self':'other'}}">{{item.text}}</view>
+            <view class="read-tag" wx:if="{{item.failed}}">发送失败</view>
+            <view class="read-tag" wx:elif="{{item.mine}}">{{item.read ? '已读' : '未读'}}</view>
+          </view>
+        </view>
+      </block>
+    </block>
+  </scroll-view>
+
+  <!-- 输入栏：flex 尾部，不再 fixed，键盘与分辨率自适应 -->
+  <view class="input-bar">
+    <input class="inp" placeholder="{{chat.peerBanned ? '对方已被封禁，无法发送消息' : '输入消息…'}}" value="{{draft}}" bindinput="onDraft" confirm-type="send" bindconfirm="send" disabled="{{chat.peerBanned}}" adjust-position="{{false}}" bindkeyboardheightchange="onKeyboardHeightChange" />
+    <view class="send" bindtap="send">发送</view>
+  </view>
+</view>

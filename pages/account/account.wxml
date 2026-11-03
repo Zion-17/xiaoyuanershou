@@ -1,0 +1,43 @@
+<!--pages/account/account.wxml-->
+<view class="page">
+  <canvas type="2d" id="avatarCanvas" style="width:256px;height:256px;position:fixed;left:-9999px;top:-9999px;"></canvas>
+
+  <view class="card head">
+    <image wx:if="{{avatarImage}}" class="avatar" src="{{avatarImage}}" mode="aspectFill" bindtap="chooseAvatar" />
+    <view wx:else class="avatar" bindtap="chooseAvatar">{{avatarEmoji}}</view>
+    <view class="muted">点击头像可选择 emoji 头像</view>
+    <button class="wechat-line" open-type="chooseAvatar" bindchooseavatar="onChooseWechatAvatar">自定义头像</button>
+  </view>
+
+  <view class="card">
+    <view class="field">
+      <text class="label">昵称</text>
+      <input class="input" type="nickname" value="{{name}}" bindinput="onName" maxlength="20" placeholder="可直接选微信昵称" placeholder-style="color:#999;" />
+      <view class="muted tip-sm">输入法上方会提示你的微信昵称，点一下即可填入</view>
+    </view>
+    <view class="field">
+      <text class="label">邮箱</text>
+      <input class="input" value="{{email}}" bindinput="onEmail" placeholder="任意邮箱，如 xxx@qq.com" placeholder-style="color:#999;" />
+    </view>
+    <view class="muted tip">学号 {{user.sid}} 为账号唯一标识，不可修改</view>
+  </view>
+
+  <button class="btn-primary save" bindtap="save">保存修改</button>
+  <button class="btn-ghost logout" bindtap="logout">退出登录</button>
+  <view class="danger" bindtap="deactivate">注销账号</view>
+
+  <!-- emoji 选择面板 -->
+  <view class="mask" wx:if="{{emojiPanel}}" bindtap="closeEmojiPanel">
+    <view class="panel" catchtap="noop">
+      <view class="panel-head">
+        <text class="panel-title">选择头像</text>
+        <text class="panel-close" bindtap="closeEmojiPanel">✕</text>
+      </view>
+      <view class="emoji-grid">
+        <view class="emoji-cell {{avatarEmoji===item && !avatarImage ? 'on' : ''}}"
+              wx:for="{{emojis}}" wx:key="*this" data-e="{{item}}" bindtap="onEmojiTap">{{item}}</view>
+      </view>
+      <view class="panel-hint muted">选中后会先预览，点「保存修改」才正式生效</view>
+    </view>
+  </view>
+</view>

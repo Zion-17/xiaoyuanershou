@@ -1,0 +1,49 @@
+<!--pages/index/index.wxml-->
+<view class="page">
+  <!-- 顶部搜索栏 -->
+  <view class="search-bar" bindtap="goSearch">
+    <view class="search-box">
+      <text class="icon">🔍</text>
+      <text class="ph">搜索教材 / 耳机 / 自行车…</text>
+    </view>
+  </view>
+
+  <!-- 公告条 -->
+  <view class="notice">🛡️ 仅限本校学生 · 推荐宿舍/图书馆面对面交易</view>
+
+  <!-- 分类宫格：固定 4 列自动换行，任意分辨率只上下滚动 -->
+  <view class="cat-grid">
+    <view class="cat-item" wx:for="{{categories}}" wx:key="id" bindtap="goCategory" data-id="{{item.id}}" data-name="{{item.name}}">
+      <view class="cat-icon" style="background:linear-gradient(135deg,{{item.grad[0]}},{{item.grad[1]}});">{{item.emoji}}</view>
+      <text class="cat-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <!-- 排序tab -->
+  <view class="sort-tabs">
+    <view class="tab {{sort==='rec'?'on':''}}" bindtap="setSort" data-s="rec">推荐</view>
+    <view class="tab {{sort==='new'?'on':''}}" bindtap="setSort" data-s="new">最新</view>
+    <view class="tab {{sort==='price'?'on':''}}" bindtap="setSort" data-s="price">价格↑</view>
+  </view>
+
+  <!-- 商品双列 -->
+  <view class="goods-grid">
+    <view class="g-card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <image wx:if="{{item.image || item.imageBase64}}" class="cover" src="{{item.image || item.imageBase64}}" mode="aspectFill" lazy-load />
+      <view wx:else class="cover" style="background:linear-gradient(135deg,{{item.grad[0]}},{{item.grad[1]}});">{{item.emoji}}</view>
+      <view class="g-body">
+        <view class="ellipsis-2 g-title">{{item.title}}</view>
+        <view class="flex-between g-mid">
+          <text class="price">{{item.price}}</text>
+          <text class="tag tag-green">{{item.condition}}</text>
+        </view>
+        <view class="g-foot">
+          <image wx:if="{{item.seller.avatarImage}}" class="seller-av" src="{{item.seller.avatarImage}}" mode="aspectFill" />
+          <text wx:else class="seller-av">{{item.seller.avatarEmoji}}</text>
+          <text class="muted ellipsis">{{item.seller.name}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="end" wx:if="{{list.length>0}}">—— 到底啦 ——</view>
+</view>

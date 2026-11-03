@@ -1,0 +1,71 @@
+page { height: 100%; overflow: hidden; }
+/* fixed 定位取代 height:100vh —— 键盘弹起时整个页面不会被顶走，商品栏钉死在顶部 */
+.chat { position: fixed; left: 0; right: 0; top: 0; bottom: 0; display: flex; flex-direction: column; background: #F6F7F9; }
+
+/* 顶部商品卡片 */
+.goods-card {
+  display: flex; align-items: center; background: #fff; flex-shrink: 0;
+  padding: 20rpx 28rpx; border-bottom: 1rpx solid #F2F3F5;
+  width: 100%; box-sizing: border-box;
+}
+.goods-card .cover {
+  width: 88rpx; height: 88rpx; margin-right: 20rpx;
+  font-size: 40rpx; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #E8F5E9, #B2DFDB); flex-shrink: 0;
+}
+.g-title { font-size: 28rpx; font-weight: 500; line-height: 1.4; }
+.g-price { font-size: 22rpx; color: #FF6B35; margin-top: 6rpx; }
+.goods-main { display: flex; align-items: center; min-width: 0; flex: 1; }
+.goods-info { flex: 1; min-width: 0; }
+.buy-btn {
+  flex-shrink: 0; margin-left: 16rpx; background: #FF6B35; color: #fff;
+  font-size: 26rpx; font-weight: 500; padding: 12rpx 30rpx; border-radius: 999rpx;
+}
+.buy-btn:active { opacity: 0.85; }
+
+/* 话题分隔条：同一窗口里换了咨询商品时提示 */
+.goods-sep { text-align: center; margin: 24rpx 0 16rpx; font-size: 22rpx; color: #8A94A6; }
+
+/* 消息列表：占满剩余高度，只纵向滚动 */
+.msgs { flex: 1; min-height: 0; width: 100%; box-sizing: border-box; padding: 24rpx 24rpx 12rpx; }
+
+/* 时间分隔条 */
+.time-bar { text-align: center; margin: 20rpx 0 12rpx; font-size: 22rpx; color: #999; }
+
+.msg-row { display: flex; width: 100%; min-width: 0; margin-bottom: 20rpx; align-items: flex-start; }
+.msg-row.self { justify-content: flex-end; }
+.bubble-wrap { max-width: 75%; min-width: 0; }
+.bubble {
+  box-sizing: border-box;
+  padding: 20rpx 26rpx;
+  border-radius: 22rpx; font-size: 30rpx; line-height: 1.6;
+  word-break: break-word; word-wrap: break-word; white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.bubble.other {
+  background: #fff; border-top-left-radius: 6rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+}
+.bubble.self {
+  background: #00B578; color: #fff;
+  border-top-right-radius: 6rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,181,120,0.15);
+}
+.read-tag { font-size: 20rpx; color: #999; text-align: right; margin-top: 6rpx; }
+
+/* 输入栏：flex 尾部固定，不遮挡消息 */
+.input-bar {
+  flex-shrink: 0; display: flex; align-items: center; width: 100%; box-sizing: border-box;
+  padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
+  background: #fff; border-top: 1rpx solid #F2F3F5;
+}
+.inp {
+  flex: 1; min-width: 0; background: #F2F3F5; border-radius: 999rpx;
+  padding: 18rpx 28rpx; font-size: 30rpx; min-height: 72rpx;
+}
+.send {
+  margin-left: 16rpx; background: #00B578; color: #fff; flex-shrink: 0;
+  padding: 18rpx 36rpx; border-radius: 999rpx; font-size: 30rpx; font-weight: 500;
+}
+.send:active { opacity: 0.85; }

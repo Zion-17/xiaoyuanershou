@@ -1,0 +1,23 @@
+<!--pages/evaluate/evaluate.wxml-->
+<view class="page" wx:if="{{order}}">
+  <view class="card goods">
+    <view class="cover" style="background:linear-gradient(135deg,{{order.grad[0]}},{{order.grad[1]}});">{{order.emoji}}</view>
+    <view class="flex-1">
+      <view class="ellipsis t">{{order.title}}</view>
+      <view class="muted">卖家：{{order.seller}} · ¥{{order.price}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="label">本次交易评分</view>
+    <view class="stars">
+      <text class="star {{i<score?'on':''}}" wx:for="{{[1,2,3,4,5]}}" wx:for-index="i" wx:key="*this" bindtap="setScore" data-s="{{item}}">★</text>
+    </view>
+    <view class="score-tip">{{scoreText}}</view>
+
+    <view class="label" style="margin-top:30rpx;">评价内容</view>
+    <textarea class="ta" placeholder="说说商品成色、卖家态度、面交体验…" value="{{content}}" bindinput="onContent" maxlength="100" />
+  </view>
+
+  <button class="btn-primary submit" bindtap="submit">提交评价</button>
+</view>

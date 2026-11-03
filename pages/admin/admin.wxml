@@ -1,0 +1,67 @@
+<!--pages/admin/admin.wxml-->
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{tab==='dash'?'on':''}}" bindtap="setTab" data-t="dash">数据看板</view>
+    <view class="tab {{tab==='users'?'on':''}}" bindtap="setTab" data-t="users">成员管理</view>
+    <view class="tab {{tab==='goods'?'on':''}}" bindtap="setTab" data-t="goods">商品管理</view>
+    <view class="tab {{tab==='msgs'?'on':''}}" bindtap="setTab" data-t="msgs">消息监管</view>
+  </view>
+
+  <!-- 数据看板 -->
+  <view class="stats" wx:if="{{tab==='dash' && stats}}">
+    <view class="stat card"><view class="num">{{stats.users}}</view><view class="muted">注册用户</view></view>
+    <view class="stat card"><view class="num">{{stats.goods}}</view><view class="muted">商品总数</view></view>
+    <view class="stat card"><view class="num">{{stats.orders}}</view><view class="muted">订单总数</view></view>
+    <view class="stat card"><view class="num">{{stats.messages}}</view><view class="muted">消息总数</view></view>
+  </view>
+
+  <view class="card migrate" wx:if="{{tab==='dash'}}">
+    <view class="muted">把旧格式数据（学号维度的会话、缺失的 openid）一次性转换到新格式，可重复执行。</view>
+    <view class="op safe" bindtap="migrate">执行数据迁移</view>
+  </view>
+
+  <!-- 成员管理 -->
+  <block wx:if="{{tab==='users'}}">
+    <view class="item card" wx:for="{{users}}" wx:key="sid">
+      <view class="flex-1">
+        <view class="row">
+          <text class="name">{{item.name}}</text>
+          <text class="tag" wx:if="{{item.role==='admin'}}">管理员</text>
+          <text class="tag tag-red" wx:if="{{item.banned}}">已封禁</text>
+        </view>
+        <view class="muted">学号 {{item.sid}} · 信用分 {{item.credit}} · 成交 {{item.dealCount || 0}}</view>
+      </view>
+      <view class="op {{item.banned?'safe':'danger'}}" wx:if="{{item.role!=='admin'}}" bindtap="toggleBan" data-sid="{{item.sid}}" data-name="{{item.name}}" data-banned="{{item.banned}}">{{item.banned?'解封':'封禁'}}</view>
+    </view>
+    <view class="empty muted" wx:if="{{users.length===0}}">暂无成员数据</view>
+  </block>
+
+  <!-- 商品管理 -->
+  <block wx:if="{{tab==='goods'}}">
+    <view class="item card" wx:for="{{goods}}" wx:key="id">
+      <view class="flex-1">
+        <view class="ellipsis title">{{item.title}}</view>
+        <view class="muted">¥{{item.price}} · {{item.sellerName}} · {{item.time}}</view>
+        <view class="row">
+          <text class="tag">{{item.status==='on'?'在售':'已下架'}}</text>
+          <text class="tag tag-red" wx:if="{{item.blocked}}">违规屏蔽</text>
+        </view>
+      </view>
+      <view class="op {{item.blocked?'safe':'danger'}}" bindtap="toggleHide" data-id="{{item.id}}" data-title="{{item.title}}" data-blocked="{{item.blocked}}">{{item.blocked?'恢复':'下架'}}</view>
+    </view>
+    <view class="empty muted" wx:if="{{goods.length===0}}">暂无商品数据</view>
+  </block>
+
+  <!-- 消息监管 -->
+  <block wx:if="{{tab==='msgs'}}">
+    <view class="item card msg" wx:for="{{msgs}}" wx:key="_id">
+      <view class="row-between">
+        <text class="name">{{item.senderName || '未知用户'}}</text>
+        <text class="muted">{{item.time}}</text>
+      </view>
+      <view class="ellipsis-2">{{item.text}}</view>
+      <view class="muted cid">会话：{{item.chatId}}</view>
+    </view>
+    <view class="empty muted" wx:if="{{msgs.length===0}}">暂无消息数据</view>
+  </block>
+</view>

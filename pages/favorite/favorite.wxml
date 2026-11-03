@@ -1,0 +1,18 @@
+<!--pages/favorite/favorite.wxml-->
+<view class="list-page">
+  <view class="empty" wx:if="{{list.length===0}}">
+    <view class="big">⭐</view>
+    <view class="muted">还没有收藏任何商品</view>
+  </view>
+
+  <view class="grid">
+    <view class="g-item card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <view class="cover" style="background:linear-gradient(135deg,{{item.grad[0]}},{{item.grad[1]}});">{{item.emoji}}</view>
+      <view class="ellipsis-2 title">{{item.title}}</view>
+      <view class="flex-between">
+        <text class="price">{{item.price}}</text>
+        <text class="unfav" catchtap="unfav" data-id="{{item.id}}">✕</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,83 @@
+/**app.wxss**/
+page {
+  background: #F6F7F9;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #222;
+  font-size: 28rpx;
+  overflow-x: hidden; /* 全局禁止横向滚动，各页只上下滚动 */
+  width: 100%;
+}
+view, text, input, button, image, scroll-label { box-sizing: border-box; }
+
+/* 主题色变量（通过 class 复用） */
+.primary { color: #00B578; }
+.bg-primary { background: #00B578; }
+
+/* 通用卡片 */
+.card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.04);
+}
+
+/* 价格 */
+.price { color: #FF4D4F; font-weight: 600; }
+.price::before { content: '¥'; font-size: 24rpx; margin-right: 4rpx; }
+
+/* 成色标签 */
+.tag {
+  display: inline-block;
+  font-size: 20rpx;
+  color: #888;
+  background: #F2F3F5;
+  border-radius: 8rpx;
+  padding: 2rpx 12rpx;
+  margin-right: 10rpx;
+}
+.tag-green { color: #00B578; background: #E6F9F0; }
+
+/* 按钮 */
+.btn-primary {
+  background: #00B578;
+  color: #fff;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  padding: 18rpx 0;
+  text-align: center;
+}
+.btn-ghost {
+  background: #fff;
+  color: #00B578;
+  border: 2rpx solid #00B578;
+  border-radius: 999rpx;
+  font-size: 30rpx;
+  padding: 16rpx 0;
+  text-align: center;
+}
+
+/* 通用 flex */
+.flex { display: flex; align-items: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.flex-1 { flex: 1; }
+.muted { color: #999; font-size: 24rpx; }
+.ellipsis {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.ellipsis-2 {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* 封面占位（渐变 + emoji） */
+.cover {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80rpx; border-radius: 16rpx;
+}
+
+/* 商品卡片上的小头像（图片或 emoji 二选一） */
+.seller-av {
+  width: 32rpx; height: 32rpx; border-radius: 50%; margin-right: 8rpx; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 22rpx; background: #F2F3F5; text-align: center; line-height: 32rpx;
+}

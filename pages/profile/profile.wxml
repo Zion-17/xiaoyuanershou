@@ -1,0 +1,58 @@
+<!--pages/profile/profile.wxml-->
+<view class="profile">
+  <!-- 顶部用户卡片 -->
+  <view class="head">
+    <block wx:if="{{user}}">
+      <image wx:if="{{user.avatarImage}}" class="avatar" src="{{user.avatarImage}}" mode="aspectFill" bindtap="goAccount" />
+      <view wx:else class="avatar" bindtap="goAccount">{{user.avatarEmoji}}</view>
+      <view class="info">
+        <view class="name-row">
+          <text class="name">{{user.name}}</text>
+          <text class="verified">{{isAdmin ? '🛡️ 管理员' : '✓ 已认证'}}</text>
+        </view>
+        <view class="muted">学号 {{user.sid}} · {{user.school}}</view>
+        <view class="credit-row">
+          <text class="credit-badge">信用分 {{user.credit}}</text>
+        </view>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="avatar" bindtap="goLogin">👤</view>
+      <view class="info" bindtap="goLogin">
+        <view class="name">点击登录 / 学号认证</view>
+        <view class="muted">仅限本校学生注册</view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 数据统计 -->
+  <view class="stats card">
+    <view class="stat" bindtap="goMyGoods">
+      <view class="num">{{myGoodsCount}}</view><view class="muted">发布</view>
+    </view>
+    <view class="stat" bindtap="goFavorite">
+      <view class="num">{{favCount}}</view><view class="muted">收藏</view>
+    </view>
+    <view class="stat" bindtap="goOrder">
+      <view class="num">{{orderCount}}</view><view class="muted">订单</view>
+    </view>
+    <view class="stat">
+      <view class="num">{{user.dealCount || 0}}</view><view class="muted">已成交</view>
+    </view>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="menu card">
+    <view class="menu-item" bindtap="goMyGoods"><text>📦 我的发布</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="goOrder"><text>📋 我的订单</text><text class="arrow">›</text></view>
+    <view class="menu-item" wx:if="{{isAdmin}}" bindtap="goAdmin"><text>🛡️ 管理员控制台</text><text class="arrow">›</text></view>
+    <view class="menu-item" wx:if="{{user}}" bindtap="goAccount"><text>⚙️ 账号管理</text><text class="arrow">›</text></view>
+    <view class="menu-item" bindtap="onContact"><text>🎧 联系客服</text><text class="arrow">›</text></view>
+  </view>
+
+  <view class="menu card">
+    <view class="menu-item" bindtap="onAbout"><text>ℹ️ 关于校园闲转</text><text class="arrow">›</text></view>
+  </view>
+
+  <button wx:if="{{user}}" class="logout" bindtap="doLogout">退出登录</button>
+</view>

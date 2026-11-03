@@ -1,0 +1,66 @@
+<!--pages/publish/publish.wxml-->
+<view class="page">
+  <!-- 隐藏的 canvas 用于压缩图片 -->
+  <canvas type="2d" id="canvas" style="width:400px;height:400px;position:fixed;left:-9999px;top:-9999px;"></canvas>
+
+  <!-- 商品图片 -->
+  <view class="card">
+    <view class="label">商品图片（选1张，自动压缩）</view>
+    <view class="img-row">
+      <view class="img-item" wx:if="{{imageBase64}}">
+        <image src="{{imageBase64}}" mode="aspectFill" class="img" />
+        <view class="img-del" bindtap="removeImg">×</view>
+      </view>
+      <view class="img-add" wx:else bindtap="chooseImg">
+        <text class="plus">+</text>
+        <text class="muted">选择图片</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="field">
+      <view class="label">商品标题</view>
+      <input class="input" placeholder="一句话描述，如：高数上下册 几乎无笔记" placeholder-style="color:#999;" value="{{title}}" bindinput="onTitle" maxlength="40" />
+    </view>
+    <view class="row2">
+      <view class="field flex-1">
+        <view class="label">售价（元）</view>
+        <input class="input" type="digit" placeholder="0.00" placeholder-style="color:#999;" value="{{price}}" bindinput="onPrice" />
+      </view>
+      <view class="field flex-1">
+        <view class="label">原价（元）</view>
+        <input class="input" type="digit" placeholder="选填" placeholder-style="color:#999;" value="{{originPrice}}" bindinput="onOrigin" />
+      </view>
+    </view>
+    <view class="field">
+      <view class="label">分类</view>
+      <picker range="{{catNames}}" bindchange="setCat">
+        <view class="input">{{catNames[catIdx] || '请选择分类'}}</view>
+      </picker>
+    </view>
+    <view class="row2">
+      <view class="field flex-1">
+        <view class="label">成色</view>
+        <picker range="{{conditions}}" bindchange="setCond">
+          <view class="input">{{conditions[condIdx]}}</view>
+        </picker>
+      </view>
+      <view class="field flex-1">
+        <view class="label">面交地点</view>
+        <picker range="{{locations}}" bindchange="setLoc">
+          <view class="input">{{locations[locIdx]}}</view>
+        </picker>
+      </view>
+    </view>
+    <view class="field">
+      <view class="label">商品描述</view>
+      <textarea class="textarea" placeholder="补充使用情况、入手渠道、可议价空间等" placeholder-style="color:#999;" value="{{desc}}" bindinput="onDesc" maxlength="200" />
+      <view class="muted" style="text-align:right;">{{desc.length}}/200</view>
+    </view>
+  </view>
+
+  <view class="audit-tip">📝 提交后将进入平台审核队列，审核通过后自动上架（演示版直接上架）</view>
+
+  <button class="btn-primary submit" bindtap="submit">立即发布</button>
+</view>

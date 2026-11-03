@@ -1,0 +1,441 @@
+// 管理端：看板、成员、商品、消息、封禁、下架、初始化与数据迁移
+const {
+  db, _, assert, ts, findOne, findAll, requireAdmin, ensureAdminOrBootstrap, blockedIds, pairKeyOf
+} = require('../lib');
+const { ADMIN_SID, DEFAULT_WHITELIST } = require('../config');
+
+async function stats(payload, ctx) {
+  await requireAdmin(ctx.openid);
+  const [u, g, o, m] = await Promise.all([
+    db.collection('users').count(),
+    db.collection('goods').count(),
+    db.collection('orders').count(),
+    db.collection('messages').count()
+  ]);
+  return { users: u.total, goods: g.total, orders: o.total, messages: m.total };
+}
+
+// 同学号多条档案的保留规则：优先保留已绑定 openid 的，其次比 updateTime 新旧
+const keepBetter = (candidate, current) => {
+  if (!current) return true;
+  const a = candidate.openid ? 1 : 0;
+  const b = current.openid ? 1 : 0;
+  if (a !== b) return a > b;
+  return ts(candidate.updateTime) > ts(current.updateTime);
+};
+
+const dedupeBySid = rows => {
+  const bySid = new Map();
+  for (const x of rows) {
+    const sid = String(x.sid);
+    if (keepBetter(x, bySid.get(sid))) bySid.set(sid, x);
+  }
+  return bySid;
+};
+
+// 同学号多条档案合并为一条，返回展示列表
+async function users(payload, ctx) {
+  await requireAdmin(ctx.openid);
+  const rows = await findAll('users', {}, { limit: 1000 });
+  const bans = new Set((await findAll('bans', {}, { limit: 1000 })).map(b => String(b.sid)));
+  const adminSids = new Set((await findAll('admins', {}, { limit: 100 })).map(a => String(a.sid)));
+  adminSids.add(ADMIN_SID);
+
+  const bySid = dedupeBySid(rows);
+
+  return [...bySid.values()]
+    .map(x => ({
+      sid: String(x.sid),
+      name: x.name,
+      role: adminSids.has(String(x.sid)) ? 'admin' : 'user',
+      credit: x.credit || 100,
+      dealCount: x.dealCount || 0,
+      banned: bans.has(String(x.sid)),
+      duplicates: rows.filter(r => String(r.sid) === String(x.sid)).length
+    }))
+    .sort((a, b) => (a.role === 'admin' ? -1 : b.role === 'admin' ? 1 : a.sid.localeCompare(b.sid)));
+}
+
+async function goodsList(payload, ctx) {
+  await requireAdmin(ctx.openid);
+  const blocked = new Set(await blockedIds());
+  const rows = await findAll('goods', {}, { order: ['createTime', 'desc'], limit: 500 });
+  return rows.map(g => ({
+    id: g._id,
+    title: g.title,
+    price: g.price,
+    sellerName: g.sellerName,
+    status: g.status,
+    blocked: blocked.has(g._id),
+    time: ts(g.createTime)
+  }));
+}
+
+async function messages(payload, ctx) {
+  await requireAdmin(ctx.openid);
+  const rows = await findAll('messages', {}, { order: ['createTime', 'desc'], limit: 500 });
+  return rows.map(m => ({
+    _id: m._id,
+    senderName: m.senderName || '未知用户',
+    text: m.text,
+    chatId: m.chatId,
+    time: ts(m.createTime)
+  }));
+}
+
+async function ban({ sid, name }, ctx) {
+  await requireAdmin(ctx.openid);
+  sid = String(sid);
+  assert(sid !== ADMIN_SID, 'BAD_INPUT', '不能封禁管理员');
+
+  if (!(await findOne('bans', { sid }))) {
+    await db.collection('bans').add({ data: { sid, name, time: new Date() } });
+  }
+  const [bySellerSid, byLegacySid] = await Promise.all([
+    findAll('goods', { sellerSid: sid, status: 'on' }, { limit: 500 }),
+    findAll('goods', { sid, status: 'on' }, { limit: 500 })
+  ]);
+  const seen = new Set();
+  const onSale = bySellerSid.concat(byLegacySid)
+    .filter(g => (seen.has(g._id) ? false : (seen.add(g._id), true)));
+  for (const g of onSale) {
+    if (!(await findOne('violations', { goodId: g._id, banSid: sid }))) {
+      await db.collection('violations').add({
+        data: { goodId: g._id, title: g.title, banSid: sid, time: new Date() }
+      });
+    }
+  }
+  return { sid, hiddenGoods: onSale.length };
+}
+
+async function unban({ sid }, ctx) {
+  await requireAdmin(ctx.openid);
+  sid = String(sid);
+  const bans = await findAll('bans', { sid }, { limit: 20 });
+  for (const b of bans) await db.collection('bans').doc(b._id).remove();
+  const vs = await findAll('violations', { banSid: sid }, { limit: 500 });
+  for (const v of vs) await db.collection('violations').doc(v._id).remove();
+  return { sid, restoredGoods: vs.length };
+}
+
+async function hideGood({ id, title }, ctx) {
+  await requireAdmin(ctx.openid);
+  if (!(await findOne('violations', { goodId: id, banSid: _.exists(false) }))) {
+    await db.collection('violations').add({ data: { goodId: id, title, time: new Date() } });
+  }
+  return { id };
+}
+
+async function restoreGood({ id }, ctx) {
+  await requireAdmin(ctx.openid);
+  const vs = await findAll('violations', { goodId: id }, { limit: 20 });
+  for (const v of vs) await db.collection('violations').doc(v._id).remove();
+  return { id };
+}
+
+// 白名单补种（幂等）：预置 4 个学号 + users 表里出现过的学号，并把数字型 sid 归一为字符串
+async function seedWhitelist(sidToOpenid) {
+  const sids = [...new Set([...DEFAULT_WHITELIST, ...Object.keys(sidToOpenid)])];
+  let created = 0;
+  for (const sid of sids) {
+    const wl = (await findOne('whitelist', { sid })) ||
+      (/^\d+$/.test(sid) ? await findOne('whitelist', { sid: Number(sid) }) : null);
+    if (!wl) {
+      await db.collection('whitelist').add({
+        data: { sid, boundOpenid: sidToOpenid[sid] || '', bindTime: sidToOpenid[sid] ? new Date() : null }
+      });
+      created++;
+    } else if (typeof wl.sid !== 'string') {
+      await db.collection('whitelist').doc(wl._id).update({ data: { sid } });
+    }
+  }
+  return { total: sids.length, created };
+}
+
+// 一次性：建白名单与管理员。可重复执行；admins 为空时允许管理员学号自举
+async function seed(payload, ctx) {
+  await ensureAdminOrBootstrap(ctx.openid);
+
+  const users = await findAll('users', {}, { limit: 1000 });
+  const sidToOpenid = {};
+  users.forEach(u => { if (u.openid) sidToOpenid[String(u.sid)] = u.openid; });
+
+  const report = await seedWhitelist(sidToOpenid);
+
+  const adminOpenid = sidToOpenid[ADMIN_SID] || ctx.openid;
+  if (!(await findOne('admins', { openid: adminOpenid }))) {
+    await db.collection('admins').add({ data: { openid: adminOpenid, sid: ADMIN_SID, time: new Date() } });
+  }
+  return { whitelist: report.total, created: report.created, adminOpenid };
+}
+
+// 一次性数据迁移：users 去重/回填、goods/messages/reads/favorites/orders 补 openid
+// 分批执行：小程序端 callFunction 约 15 秒超时，每次只处理 maxMessages 条消息，剩余条数在返回值里
+async function migrateV1(payload, ctx) {
+  await ensureAdminOrBootstrap(ctx.openid);
+  const budget = Math.max(10, +((payload || {}).maxMessages) || 60);
+  const report = { users: 0, removedUsers: 0, goods: 0, chats: 0, messages: 0, skips: 0, remaining: 0, whitelist: null };
+
+  const users = await findAll('users', {}, { limit: 1000 });
+  const sidToOpenid = {};
+  const nameToSid = {};
+  for (const u of users) {
+    const sid = String(u.sid);
+    const openid = u.openid || u._openid || '';
+    if (openid && !u.openid) {
+      await db.collection('users').doc(u._id).update({ data: { openid } });
+      report.users++;
+    }
+    if (openid) sidToOpenid[sid] = openid;
+    if (u.name) nameToSid[u.name] = sid;
+  }
+
+  // 同学号多条：按"优先有 openid，其次时间最新"的规则保留一条
+  const bySid = dedupeBySid(users);
+  for (const u of users) {
+    const keep = bySid.get(String(u.sid));
+    if (keep && keep._id !== u._id) {
+      await db.collection('users').doc(u._id).remove();
+      report.removedUsers++;
+    }
+  }
+
+  // 白名单与管理员一起补种，避免只迁移不种白名单导致全员登不进去
+  report.whitelist = await seedWhitelist(sidToOpenid);
+  const adminOpenid = sidToOpenid[ADMIN_SID] || ctx.openid;
+  if (!(await findOne('admins', { openid: adminOpenid }))) {
+    await db.collection('admins').add({ data: { openid: adminOpenid, sid: ADMIN_SID, time: new Date() } });
+  }
+
+  const goods = await findAll('goods', {}, { limit: 500 });
+  for (const g of goods) {
+    const openid = g.sellerOpenid || sidToOpenid[String(g.sellerSid || g.sid || '')] || '';
+    if (openid && !g.sellerOpenid) {
+      await db.collection('goods').doc(g._id).update({ data: { sellerOpenid: openid, sellerSid: String(g.sid || g.sellerSid || '') } });
+      report.goods++;
+    }
+  }
+
+  const chatMap = {}; // 旧 chatId → 新 chatId
+  let processed = 0;
+  const messages = await findAll('messages', {}, { limit: 1000 });
+  for (const m of messages) {
+    if (m.openidA && m.openidB) { report.skips++; continue; }
+    if (processed >= budget) { report.remaining++; continue; }
+    const parts = String(m.chatId || '').split('_');
+    if (parts.length !== 4) { report.skips++; continue; }
+    const goodId = parts[1];
+    const oa = sidToOpenid[parts[2]] || '';
+    const ob = sidToOpenid[parts[3]] || '';
+    if (!oa || !ob) { report.skips++; continue; }
+    const [a, b] = oa < ob ? [oa, ob] : [ob, oa];
+
+    let newChatId = chatMap[m.chatId];
+    if (!newChatId) {
+      let chat = await findOne('chats', { goodId, openidA: a, openidB: b });
+      if (!chat) {
+        const res = await db.collection('chats').add({
+          data: { goodId, openidA: a, openidB: b, lastText: '', lastTime: m.createTime || new Date(), createTime: new Date() }
+        });
+        newChatId = res._id;
+        report.chats++;
+      } else {
+        newChatId = chat._id;
+      }
+      chatMap[m.chatId] = newChatId;
+    }
+
+    const senderSid = nameToSid[m.senderName] || '';
+    await db.collection('messages').doc(m._id).update({
+      data: {
+        chatId: newChatId,
+        goodId,
+        openidA: a,
+        openidB: b,
+        senderSid,
+        senderOpenid: sidToOpenid[senderSid] || ''
+      }
+    });
+    processed++;
+    report.messages++;
+  }
+
+  const reads = await findAll('reads', {}, { limit: 500 });
+  for (const r of reads) {
+    const oa = r.openidA || sidToOpenid[String(r.sid || '')] || '';
+    const oldParts = String(r.chatId || '').split('_');
+    const newChatId = chatMap[r.chatId] || r.chatId;
+    let a = r.openidA, b = r.openidB;
+    if (!a && oldParts.length === 4) {
+      const x = sidToOpenid[oldParts[2]] || '';
+      const y = sidToOpenid[oldParts[3]] || '';
+      if (x && y) { a = x < y ? x : y; b = x < y ? y : x; }
+    }
+    await db.collection('reads').doc(r._id).update({
+      data: { chatId: newChatId, openid: oa, openidA: a || '', openidB: b || '' }
+    });
+  }
+
+  const favs = await findAll('favorites', {}, { limit: 500 });
+  for (const f of favs) {
+    if (f.openid) continue;
+    const openid = sidToOpenid[String(f.sid || '')] || '';
+    if (openid) await db.collection('favorites').doc(f._id).update({ data: { openid } });
+  }
+
+  const orders = await findAll('orders', {}, { limit: 500 });
+  for (const o of orders) {
+    if (o.buyerOpenid && o.sellerOpenid) continue;
+    const buyerSid = o.buyerSid || nameToSid[o.buyer] || '';
+    const sellerSid = o.sellerSid || nameToSid[o.seller] || '';
+    await db.collection('orders').doc(o._id).update({
+      data: {
+        buyerSid: String(buyerSid),
+        sellerSid: String(sellerSid),
+        buyerOpenid: o.buyerOpenid || sidToOpenid[buyerSid] || '',
+        sellerOpenid: o.sellerOpenid || sidToOpenid[sellerSid] || ''
+      }
+    });
+  }
+
+  return report;
+}
+
+// ---------------- 会话合并迁移 V2 ----------------
+// 目标：①修复历史脏数据（学号被写进 openid 字段）②同一对用户的多条会话合并成一条
+// 约束：不删除任何消息、不物理删除任何 chats 文档、可重复执行；默认 dryRun，需显式 execute=true 才写库
+const SID_RE = /^\d{6,12}$/;
+
+async function migrateV2(payload, ctx) {
+  await requireAdmin(ctx.openid);
+  const dryRun = !(payload && payload.execute === true);
+
+  // 学号 → openid 映射，只信有 openid 的档案
+  const userRows = await findAll('users', {}, { limit: 1000 });
+  const sidToOpenid = {};
+  userRows.forEach(u => {
+    const sid = String(u.sid || '');
+    if (sid && u.openid) sidToOpenid[sid] = u.openid;
+  });
+  const toOpenid = v => {
+    const s = String(v || '');
+    if (!s) return '';
+    return SID_RE.test(s) ? (sidToOpenid[s] || '') : s;
+  };
+
+  const report = {
+    dryRun,
+    mappedSids: Object.keys(sidToOpenid).length,
+    goodsFixed: [],
+    chatFieldsFixed: [],
+    pairs: [],
+    messagesMoved: 0,
+    readsMoved: 0,
+    skipped: []
+  };
+
+  // 1) goods.sellerOpenid 里的学号 → openid
+  const goodsRows = await findAll('goods', {}, { limit: 1000 });
+  for (const g of goodsRows) {
+    const raw = String(g.sellerOpenid || '');
+    if (!SID_RE.test(raw)) continue;
+    const fixed = sidToOpenid[raw] || '';
+    if (!fixed) {
+      report.skipped.push('商品「' + (g.title || g._id) + '」sellerOpenid=' + raw + ' 找不到对应用户');
+      continue;
+    }
+    report.goodsFixed.push({ id: g._id, title: g.title || '', from: raw, to: fixed });
+    if (!dryRun) {
+      await db.collection('goods').doc(g._id).update({
+        data: { sellerOpenid: fixed, sellerSid: String(g.sellerSid || g.sid || raw) }
+      });
+    }
+  }
+
+  // 2) chats 里的学号 → openid，并按 openid 对归并
+  const chatRows = await findAll('chats', {}, { limit: 1000 });
+  const groups = new Map();
+  for (const c of chatRows) {
+    if (c.mergedInto) continue;
+    const a0 = toOpenid(c.openidA);
+    const b0 = toOpenid(c.openidB);
+    if (!a0 || !b0) {
+      report.skipped.push('会话 ' + c._id + ' 的 openid 无法解析：' + c.openidA + ' / ' + c.openidB);
+      continue;
+    }
+    if (a0 === b0) {
+      report.skipped.push('会话 ' + c._id + ' 双方 openid 相同');
+      continue;
+    }
+    const [a, b] = a0 < b0 ? [a0, b0] : [b0, a0];
+    const key = pairKeyOf(a, b);
+    if (!groups.has(key)) groups.set(key, { key, a, b, chats: [] });
+    groups.get(key).chats.push({ ...c, _a: a, _b: b });
+    if (c.openidA !== a || c.openidB !== b) {
+      report.chatFieldsFixed.push({ id: c._id, from: [c.openidA, c.openidB], to: [a, b] });
+    }
+  }
+
+  for (const grp of groups.values()) {
+    const oldIds = grp.chats.map(c => c.id || c._id);
+    let msgs = [];
+    for (const id of oldIds) {
+      msgs = msgs.concat(await findAll('messages', { chatId: id }, { limit: 1000 }));
+    }
+    msgs.sort((x, y) => ts(x.createTime) - ts(y.createTime));
+    const last = msgs[msgs.length - 1] || null;
+    const first = msgs[0] || null;
+    const fallbackGood = grp.chats.map(c => c.goodId || '').filter(Boolean)[0] || '';
+    const currentGoodId = (last && last.goodId) || fallbackGood;
+
+    report.pairs.push({
+      key: grp.key,
+      openidA: grp.a,
+      openidB: grp.b,
+      from: oldIds,
+      messages: msgs.length,
+      currentGoodId,
+      lastText: last ? String(last.text || '') : ''
+    });
+    if (dryRun) continue;
+
+    const data = {
+      openidA: grp.a,
+      openidB: grp.b,
+      goodId: fallbackGood || currentGoodId,
+      currentGoodId,
+      lastText: last ? String(last.text || '') : '',
+      lastTime: (last && last.createTime) || new Date(),
+      createTime: (first && first.createTime) || new Date()
+    };
+    const canon = await db.collection('chats').doc(grp.key).get().then(r => r.data).catch(() => null);
+    if (canon) {
+      await db.collection('chats').doc(grp.key).update({ data });
+    } else {
+      await db.collection('chats').add({ data: { _id: grp.key, ...data } });
+    }
+
+    for (const id of oldIds) {
+      if (id === grp.key) continue;
+      const r1 = await db.collection('messages').where({ chatId: id }).update({
+        data: { chatId: grp.key, openidA: grp.a, openidB: grp.b }
+      });
+      report.messagesMoved += (r1 && r1.stats && r1.stats.updated) || 0;
+
+      const r2 = await db.collection('reads').where({ chatId: id }).update({
+        data: { chatId: grp.key, openidA: grp.a, openidB: grp.b }
+      });
+      report.readsMoved += (r2 && r2.stats && r2.stats.updated) || 0;
+
+      // 旧会话文档只打合并标记，不物理删除
+      await db.collection('chats').doc(id).update({ data: { mergedInto: grp.key, mergedAt: new Date() } });
+    }
+  }
+
+  return report;
+}
+
+module.exports = {
+  stats, users, goods: goodsList, messages,
+  ban, unban, hideGood, restoreGood, seed, migrateV1, migrateV2
+};

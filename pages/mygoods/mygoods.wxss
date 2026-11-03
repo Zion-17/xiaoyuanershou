@@ -1,0 +1,15 @@
+.list-page { padding: 24rpx; }
+.empty { text-align: center; padding: 160rpx 0; }
+.empty .big { font-size: 100rpx; margin-bottom: 20rpx; }
+.empty .go { width: 320rpx; margin: 30rpx auto 0; }
+.item { display: flex; margin-bottom: 20rpx; }
+.item .cover { width: 180rpx; height: 180rpx; margin-right: 20rpx; flex-shrink: 0; font-size: 70rpx; }
+.item .body { flex: 1; display: flex; flex-direction: column; }
+.title { font-size: 28rpx; margin-bottom: 10rpx; }
+.row { display: flex; align-items: center; margin-bottom: 8rpx; }
+.row-between { display: flex; justify-content: space-between; align-items: center; }
+.status.on { color: #00B578; font-size: 22rpx; }
+.status.off { color: #999; font-size: 22rpx; }
+.ops { margin-top: auto; padding-top: 12rpx; }
+.op { font-size: 24rpx; color: #00B578; margin-right: 24rpx; }
+.op.danger { color: #FF4D4F; }

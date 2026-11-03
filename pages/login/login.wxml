@@ -1,0 +1,31 @@
+<!--pages/login/login.wxml-->
+<view class="login">
+  <view class="hero">
+    <view class="logo">🔁</view>
+    <view class="title">校园闲转</view>
+    <view class="subtitle">仅限本校学生 · 面对面安全交易</view>
+  </view>
+
+  <view class="form card">
+    <view class="field">
+      <text class="label">学号</text>
+      <input class="input" placeholder="请输入学号（如 000000001）" placeholder-style="color:#999;" value="{{sid}}" bindinput="onSid" />
+    </view>
+    <view class="field">
+      <text class="label">邮箱</text>
+      <input class="input" placeholder="任意邮箱，如 xxx@qq.com" placeholder-style="color:#999;" value="{{email}}" bindinput="onEmail" />
+    </view>
+    <view class="field">
+      <text class="label">昵称</text>
+      <input class="input" placeholder="给自己起个昵称" placeholder-style="color:#999;" value="{{nick}}" bindinput="onNick" />
+    </view>
+
+    <view class="tips" bindtap="toggleAgree">
+      <view class="checkbox {{agree?'on':''}}">{{agree?'✓':''}}</view>
+      <text>我已阅读并同意《校园交易安全公约》，承诺发布真实信息</text>
+    </view>
+
+    <button class="btn-primary" bindtap="doLogin">学号认证并登录</button>
+    <view class="demo muted">演示提示：学号填 9 位数字、邮箱含 @ 即可一键通过认证</view>
+  </view>
+</view>

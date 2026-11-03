@@ -1,0 +1,55 @@
+.page { padding-bottom: 40rpx; overflow-x: hidden; }
+
+/* 搜索栏 */
+.search-bar { padding: 16rpx 24rpx; background: #fff; }
+.search-box {
+  background: #F2F3F5; border-radius: 999rpx; padding: 16rpx 28rpx;
+  display: flex; align-items: center;
+}
+.search-box .icon { margin-right: 12rpx; }
+.search-box .ph { color: #999; font-size: 26rpx; }
+
+/* 公告 */
+.notice {
+  margin: 16rpx 24rpx; padding: 16rpx 24rpx;
+  background: #E6F9F0; color: #00B578; border-radius: 12rpx; font-size: 24rpx;
+}
+
+/* 分类宫格：4 列等分自动换行 */
+.cat-grid {
+  display: flex; flex-wrap: wrap; padding: 8rpx 12rpx 4rpx; background: #fff;
+}
+.cat-item { width: 25%; text-align: center; padding: 12rpx 0; box-sizing: border-box; }
+.cat-icon {
+  width: 100rpx; height: 100rpx; border-radius: 26rpx; margin: 0 auto 12rpx;
+  display: flex; align-items: center; justify-content: center; font-size: 50rpx;
+}
+.cat-name { font-size: 24rpx; color: #444; }
+
+/* 排序标签 */
+.sort-tabs {
+  display: flex; padding: 18rpx 24rpx; background: #F6F7F9;
+}
+.tab { margin-right: 40rpx; font-size: 26rpx; color: #666; }
+.tab.on { color: #00B578; font-weight: 600; position: relative; }
+.tab.on::after {
+  content: ''; position: absolute; left: 50%; bottom: -12rpx; transform: translateX(-50%);
+  width: 40rpx; height: 6rpx; background: #00B578; border-radius: 3rpx;
+}
+
+/* 商品双列 */
+.goods-grid { display: flex; flex-wrap: wrap; justify-content: space-between; padding: 0 20rpx; }
+.g-card {
+  width: 48%; min-width: 0; background: #fff; border-radius: 20rpx; overflow: hidden;
+  margin-bottom: 20rpx; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05); box-sizing: border-box;
+}
+.g-card .cover {
+  height: 280rpx; font-size: 110rpx; border-radius: 0;
+}
+.g-body { padding: 18rpx; }
+.g-title { font-size: 26rpx; line-height: 1.4; min-height: 72rpx; }
+.g-mid { margin: 12rpx 0; }
+.g-foot { display: flex; align-items: center; justify-content: space-between; }
+.g-foot .muted { font-size: 22rpx; max-width: 160rpx; }
+
+.end { text-align: center; color: #bbb; font-size: 24rpx; padding: 40rpx 0; }

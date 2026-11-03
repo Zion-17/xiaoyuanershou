@@ -1,0 +1,30 @@
+/* pages/admin/admin.wxss */
+.page { padding: 20rpx 24rpx 40rpx; overflow-x: hidden; }
+
+.tabs { display: flex; background: #fff; border-radius: 16rpx; padding: 8rpx; margin-bottom: 20rpx; }
+.tab { flex: 1; min-width: 0; text-align: center; font-size: 26rpx; color: #666; padding: 14rpx 0; border-radius: 12rpx; }
+.tab.on { background: #E6F9F0; color: #00B578; font-weight: 600; }
+
+.stats { display: flex; flex-wrap: wrap; justify-content: space-between; }
+.stat { width: 48%; text-align: center; padding: 32rpx 0; margin-bottom: 20rpx; box-sizing: border-box; }
+.stat .num { font-size: 48rpx; font-weight: 700; color: #00B578; }
+
+.item { display: flex; align-items: center; margin-bottom: 16rpx; }
+.item .flex-1 { min-width: 0; }
+.row { display: flex; align-items: center; flex-wrap: wrap; margin: 6rpx 0; }
+.row-between { display: flex; justify-content: space-between; align-items: baseline; }
+.name { font-size: 28rpx; font-weight: 600; margin-right: 12rpx; }
+.title { font-size: 28rpx; font-weight: 500; }
+.tag-red { color: #FF4D4F; background: #FFF1F0; }
+
+.op { flex-shrink: 0; margin-left: 16rpx; font-size: 26rpx; padding: 10rpx 24rpx; border-radius: 999rpx; }
+.op.danger { color: #FF4D4F; background: #FFF1F0; }
+.op.safe { color: #00B578; background: #E6F9F0; }
+
+.msg { display: block; }
+.cid { font-size: 20rpx; margin-top: 8rpx; word-break: break-all; }
+.empty { text-align: center; padding: 120rpx 0; }
+
+.migrate { margin-top: 20rpx; text-align: center; }
+.migrate .muted { line-height: 1.6; }
+.migrate .op { display: inline-block; margin: 20rpx 0 0; }

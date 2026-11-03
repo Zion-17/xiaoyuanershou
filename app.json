@@ -1,0 +1,42 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/category/category",
+    "pages/publish/publish",
+    "pages/message/message",
+    "pages/profile/profile",
+    "pages/login/login",
+    "pages/search/search",
+    "pages/detail/detail",
+    "pages/chat/chat",
+    "pages/order/order",
+    "pages/mygoods/mygoods",
+    "pages/favorite/favorite",
+    "pages/evaluate/evaluate",
+    "pages/account/account",
+    "pages/admin/admin"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "校园闲转",
+    "backgroundColor": "#F6F7F9",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#9AA0A6",
+    "selectedColor": "#00B578",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页", "iconPath": "images/tabbar/home.png", "selectedIconPath": "images/tabbar/home.png" },
+      { "pagePath": "pages/category/category", "text": "分类", "iconPath": "images/tabbar/category.png", "selectedIconPath": "images/tabbar/category.png" },
+      { "pagePath": "pages/publish/publish", "text": "发布", "iconPath": "images/tabbar/publish.png", "selectedIconPath": "images/tabbar/publish.png" },
+      { "pagePath": "pages/message/message", "text": "消息", "iconPath": "images/tabbar/message.png", "selectedIconPath": "images/tabbar/message.png" },
+      { "pagePath": "pages/profile/profile", "text": "我的", "iconPath": "images/tabbar/profile.png", "selectedIconPath": "images/tabbar/profile.png" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

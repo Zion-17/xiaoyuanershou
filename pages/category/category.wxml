@@ -1,0 +1,25 @@
+<!--pages/category/category.wxml-->
+<view class="page">
+  <view class="side">
+    <view class="side-item {{active===item.id?'on':''}}" wx:for="{{categories}}" wx:key="id" bindtap="setCat" data-id="{{item.id}}">
+      <text class="ico">{{item.emoji}}</text>
+      <text class="nm">{{item.name}}</text>
+    </view>
+  </view>
+  <scroll-view scroll-y class="main">
+    <view class="main-title">{{activeName}}</view>
+    <view class="g-card" wx:for="{{list}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <image wx:if="{{item.image || item.imageBase64}}" class="cover" src="{{item.image || item.imageBase64}}" mode="aspectFill" lazy-load />
+      <view wx:else class="cover" style="background:linear-gradient(135deg,{{item.grad[0]}},{{item.grad[1]}});">{{item.emoji}}</view>
+      <view class="flex-1">
+        <view class="ellipsis-2 t">{{item.title}}</view>
+        <view class="row">
+          <text class="price">{{item.price}}</text>
+          <text class="tag">{{item.condition}}</text>
+        </view>
+        <view class="muted">{{item.location}} · {{item.seller.name}}</view>
+      </view>
+    </view>
+    <view class="empty muted" wx:if="{{list.length===0}}">该分类暂无闲置</view>
+  </scroll-view>
+</view>

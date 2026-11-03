@@ -1,0 +1,42 @@
+.profile { padding: 0 24rpx 60rpx; }
+.head {
+  background: linear-gradient(135deg, #7EDFA8, #00B578);
+  margin: 0 -24rpx 24rpx; padding: 60rpx 40rpx 50rpx;
+  display: flex; align-items: center; color: #fff;
+}
+.avatar {
+  width: 120rpx; height: 120rpx; border-radius: 50%;
+  background: rgba(255,255,255,0.3); font-size: 64rpx;
+  display: flex; align-items: center; justify-content: center; margin-right: 24rpx;
+}
+.info { flex: 1; }
+.name-row { display: flex; align-items: center; }
+.name { font-size: 36rpx; font-weight: 700; margin-right: 16rpx; }
+.verified {
+  font-size: 20rpx; background: rgba(255,255,255,0.25);
+  padding: 2rpx 14rpx; border-radius: 999rpx;
+}
+.head .muted { color: rgba(255,255,255,0.85); margin-top: 8rpx; }
+.credit-badge {
+  display: inline-block; margin-top: 14rpx;
+  background: rgba(255,255,255,0.25); border-radius: 999rpx;
+  padding: 6rpx 20rpx; font-size: 24rpx;
+}
+
+.stats { display: flex; padding: 30rpx 0; margin-bottom: 24rpx; }
+.stat { flex: 1; text-align: center; }
+.stat .num { font-size: 38rpx; font-weight: 700; color: #222; }
+
+.menu { padding: 0 24rpx; margin-bottom: 24rpx; }
+.menu-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 28rpx 0; border-bottom: 1rpx solid #F2F3F5; font-size: 28rpx;
+}
+.menu-item:last-child { border-bottom: none; }
+.arrow { color: #ccc; }
+
+.logout {
+  background: #fff; color: #FF4D4F; border-radius: 20rpx;
+  margin-top: 20rpx; font-size: 30rpx;
+}
+.logout::after { border: none; }

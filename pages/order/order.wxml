@@ -1,0 +1,31 @@
+<!--pages/order/order.wxml-->
+<view class="page">
+  <view class="empty" wx:if="{{list.length===0}}">
+    <view class="big">📋</view>
+    <view class="muted">还没有订单，去首页逛逛吧</view>
+  </view>
+
+  <view class="card" wx:for="{{list}}" wx:key="_id">
+    <view class="row-between head">
+      <text class="oid muted">订单 {{item._id}}</text>
+      <text class="status st-{{item.statusKey}}">{{item.status}}</text>
+    </view>
+    <view class="goods" bindtap="goDetail" data-id="{{item.goodId}}">
+      <view class="cover" style="background:linear-gradient(135deg,{{item.grad[0]}},{{item.grad[1]}});">{{item.emoji}}</view>
+      <view class="flex-1">
+        <view class="ellipsis-2 t">{{item.title}}</view>
+        <view class="muted">卖家：{{item.seller}} · {{item.method}}</view>
+      </view>
+      <text class="price">{{item.price}}</text>
+    </view>
+    <view class="row-between foot">
+      <text class="muted">{{item.time}}</text>
+      <view class="ops">
+        <text class="op" wx:if="{{item.status==='待确认'}}" bindtap="cancel" data-id="{{item._id}}">取消订单</text>
+        <text class="op primary" wx:if="{{item.status==='待确认'}}" bindtap="confirm" data-id="{{item._id}}">确认收货</text>
+        <text class="op primary" wx:if="{{item.status==='已完成' && !item.evaluated}}" bindtap="goEvaluate" data-id="{{item._id}}">去评价</text>
+        <text class="op" wx:if="{{item.status==='已完成' && item.evaluated}}">已评价</text>
+      </view>
+    </view>
+  </view>
+</view>
