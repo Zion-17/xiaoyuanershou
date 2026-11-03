@@ -207,7 +207,7 @@ pages/*  ──► services/*.js  ──►  wx.cloud.callFunction({name:'api', 
 |---|---|---|---|
 | 1 | 管理端成员列表一个账号显示多条 | `users` 集合存在大量同学号重复档案；`adminGetUsers` 的显示层去重（`cloud.js:294-301`）只是补丁，根因是**写入端无唯一约束**（客户端可任意 `add`，并发或不一致即产生重复） | 迁移时按 sid 合并删除多余记录；云函数改为按 sid upsert |
 | 2 | 封禁后商品仍在售、本人仍能发消息、他人仍能发给他 | **确定性 bug**：三处禁聊校验的都是"对方"（`chat.js:161` 查 `sellerName`、`message.js:19` 查 `chat.with`、`detail.js:63` 查卖家），**从未校验发送者本人**，所以被封的人自己发消息永远放行。商品侧另需核实 `goods.sid` 与 `bans.sid` 类型/取值是否一致 | 服务端在 `chat.send` 校验发送者封禁态；商品可见性由服务端过滤；发送失败必须报错而非静默 |
-| 3 | 客服入口应统一为电话 YOUR_PHONE | `profile.js:28` 仍是"客服微信 campus-help"，与 11-02 批准稿冲突；电话散落 `app.js:63`、`guard.js:5` | 抽出 `utils/config.js` 单一定义，三处引用；删除微信客服话术 |
+| 3 | 客服入口应统一为电话 00000000000 | `profile.js:28` 仍是"客服微信 campus-help"，与 11-02 批准稿冲突；电话散落 `app.js:63`、`guard.js:5` | 抽出 `utils/config.js` 单一定义，三处引用；删除微信客服话术 |
 | 4 | 被封禁账号仍能登录（假封禁） | 无"发送者封禁"校验路径 + `catch` 兜底成"未封禁"（`cloud.js:56`、`92`）+ 客户端 20 条截断，三者叠加 | 登录与每次写操作均走云函数强制校验；写操作 fail-closed |
 | 5 | 未登录可使用部分功能 | `mygoods`/`favorite`/`order`/`evaluate` 四页**无任何拦截**；`publish` 只在提交时拦 | 统一走 `guard.requireLogin`；详情页不拦（只拦收藏/聊天/下单三个动作） |
 

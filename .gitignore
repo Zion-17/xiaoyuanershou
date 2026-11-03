@@ -1,16 +1,9 @@
-# Claude Code 本地配置（可能含凭据，绝不入库）
+# Claude Code 本地配置（含凭据，不随项目发布）
 .claude/
 
-# 微信开发者工具私有配置
-project.private.config.json
-
-# 课程作业文档与个人资料
-*.docx
-
-# 临时/系统产物
-debug_frames/
-.DS_Store
-Thumbs.db
-*.bak
+# 包管理产物
 node_modules/
 miniprogram_npm/
+
+# 课程作业文档（正文含小组成员真实信息，不入公开仓库，本地保留）
+*.docx
