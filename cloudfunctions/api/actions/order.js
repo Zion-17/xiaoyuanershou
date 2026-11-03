@@ -120,9 +120,4 @@ async function get({ id }, { openid }) {
   };
 }
 
-async function count(payload, { openid }) {
-  const rows = await list(payload, { openid });
-  return { total: rows.length };
-}
-
-module.exports = { create, list, get, update, evaluate, count };
+module.exports = { create, list, get, update, evaluate };

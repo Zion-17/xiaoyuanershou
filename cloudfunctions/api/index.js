@@ -49,7 +49,6 @@ const routes = {
   'admin.hideGood': admin.hideGood,
   'admin.restoreGood': admin.restoreGood,
   'admin.seed': admin.seed,
-  'admin.migrateV1': admin.migrateV1,
   'admin.migrateV2': admin.migrateV2
 };
 

@@ -10,6 +10,5 @@ module.exports = {
   hideGood: (id, title) => call('admin.hideGood', { id, title }),
   restoreGood: id => call('admin.restoreGood', { id }),
   seed: () => call('admin.seed'),
-  migrateV1: () => call('admin.migrateV1'),
   migrateV2: payload => call('admin.migrateV2', payload || {})
 };

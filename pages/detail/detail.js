@@ -35,8 +35,7 @@ Page({
         categoryName: app.getCategoryName(g.category),
         isOwner,
         canBuy: g.status === 'on' && !isOwner,
-        soldOut: g.status === 'sold',
-        offShelf: g.status === 'off'
+        soldOut: g.status === 'sold'
       });
       this.refreshFav();
       if (this._autoBuy) { this._autoBuy = false; this.order(); }
