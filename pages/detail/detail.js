@@ -11,6 +11,7 @@ Page({
 
   onLoad(opt) {
     this._id = (opt && opt.id) || '';
+    // 从聊天页的「购买」进来时带 buy=1，加载完成后再自动拉起下单面板（只触发一次）
     this._autoBuy = !!(opt && opt.buy);
     this._open();
   },
