@@ -7,3 +7,6 @@ miniprogram_npm/
 
 # 课程作业文档（正文含小组成员真实信息，不入公开仓库，本地保留）
 *.docx
+
+# PPT 自查缩略图（构建产物，不入库）
+docs/ppt/preview/
