@@ -1,6 +1,6 @@
 // 订单：创建、列表、状态流转、评价
 const {
-  db, assert, ts, findOne, findAll, me
+  db, assert, ts, findOne, findAll, me, userByOpenid
 } = require('../lib');
 
 async function create({ goodId, method }, { openid }) {
@@ -84,11 +84,14 @@ async function update({ id, status }, { openid }) {
   }
 
   if (status === '已完成') {
-    const seller = await findOne('users', { openid: o.sellerOpenid });
-    if (seller) {
-      await db.collection('users').doc(seller._id).update({
-        data: { dealCount: (seller.dealCount || 0) + 1 }
-      });
+    // 成交对买卖双方各计一次。状态只能从「待确认」流转一次（见上面的 assert），不会重复计数。
+    for (const who of [o.sellerOpenid, o.buyerOpenid]) {
+      const u = await userByOpenid(who);
+      if (u) {
+        await db.collection('users').doc(u._id).update({
+          data: { dealCount: (u.dealCount || 0) + 1 }
+        });
+      }
     }
   }
 

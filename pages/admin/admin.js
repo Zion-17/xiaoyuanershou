@@ -112,6 +112,31 @@ Page({
     });
   },
 
+  // 按「已完成」订单重算成交数：买卖双方各计一次，绝对赋值所以可重复执行
+  recount() {
+    wx.showModal({
+      title: '重算成交数',
+      content: '按已完成订单重新统计每个账号的成交数，买卖双方各计一次。可重复执行。',
+      success: async r => {
+        if (!r.confirm) return;
+        wx.showLoading({ title: '统计中…' });
+        try {
+          const rep = await adminSvc.recountDeals({ execute: true });
+          wx.hideLoading();
+          wx.showModal({
+            title: '完成',
+            content: `已完成订单 ${rep.orders} 条，更新账号 ${(rep.changes || []).length} 个`,
+            showCancel: false
+          });
+          this.loadTab();
+        } catch (e) {
+          wx.hideLoading();
+          guard.showError(e);
+        }
+      }
+    });
+  },
+
   toggleHide(e) {
     const { id, title, blocked } = e.currentTarget.dataset;
     wx.showModal({

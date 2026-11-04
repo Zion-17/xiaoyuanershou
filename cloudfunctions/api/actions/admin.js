@@ -303,7 +303,34 @@ async function migrateV2(payload, ctx) {
   return report;
 }
 
+// 重算成交数：按 orders 里「已完成」的订单重新统计，买卖双方各计一次。
+// 用绝对赋值而不是累加，所以重复执行结果一致；默认 dryRun。
+async function recountDeals(payload, ctx) {
+  await requireAdmin(ctx.openid);
+  const dryRun = !(payload && payload.execute === true);
+
+  const orders = await findAll('orders', { status: '已完成' }, { limit: 1000 });
+  const count = {};
+  orders.forEach(o => {
+    [o.sellerOpenid, o.buyerOpenid].forEach(id => {
+      if (id) count[id] = (count[id] || 0) + 1;
+    });
+  });
+
+  const users = await findAll('users', {}, { limit: 1000 });
+  const changes = [];
+  for (const u of users) {
+    const key = u.openid || u._openid || '';
+    const want = count[key] || 0;
+    if (Number(u.dealCount || 0) !== want) {
+      changes.push({ sid: String(u.sid || ''), name: u.name || '', from: Number(u.dealCount || 0), to: want });
+      if (!dryRun) await db.collection('users').doc(u._id).update({ data: { dealCount: want } });
+    }
+  }
+  return { dryRun, orders: orders.length, users: users.length, changes };
+}
+
 module.exports = {
   stats, users, goods: goodsList, messages,
-  ban, unban, hideGood, restoreGood, seed, migrateV2
+  ban, unban, hideGood, restoreGood, seed, migrateV2, recountDeals
 };

@@ -18,6 +18,7 @@
   <view class="card migrate" wx:if="{{tab==='dash'}}">
     <view class="muted">把旧格式数据（学号维度的会话、缺失的 openid）一次性转换到新格式，可重复执行。</view>
     <view class="op safe" bindtap="migrate">执行数据迁移</view>
+    <view class="op safe" bindtap="recount">重算成交数</view>
   </view>
 
   <!-- 成员管理 -->

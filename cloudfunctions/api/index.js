@@ -49,7 +49,8 @@ const routes = {
   'admin.hideGood': admin.hideGood,
   'admin.restoreGood': admin.restoreGood,
   'admin.seed': admin.seed,
-  'admin.migrateV2': admin.migrateV2
+  'admin.migrateV2': admin.migrateV2,
+  'admin.recountDeals': admin.recountDeals
 };
 
 exports.main = async event => {
