@@ -29,6 +29,9 @@ pages/*  ──►  services/*.js  ──►  utils/api.js  ──►  云函数
 | `utils/config.js` | 云环境 ID、客服电话（全项目唯一来源） |
 | `cloudfunctions/api/` | 云函数：`index.js` 路由 + `lib.js` 公共能力 + `actions/*` 领域处理 |
 | `scripts/` | 自研静态检查与冒烟测试（见 TESTING.md） |
+| `docs/ppt/` | `make_deck.py` 生成答辩 PPT（`答辩PPT.pptx`、`slides.html`），`preview/` 为自查截图 |
+| `docs/` 根目录 | 课程交付文档（`*.docx` 仅本地保留，不入库） |
+| `brainstorming/plans/` | 设计决策与改造计划存档 |
 
 **身份模型**：以 `openid` 为准。学号通过白名单校验并绑定 openid，此后该学号只能由绑定的微信登录。
 
