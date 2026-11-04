@@ -10,3 +10,6 @@ miniprogram_npm/
 
 # PPT 自查缩略图（构建产物，不入库）
 docs/ppt/preview/
+
+# 课程作业文档生成脚本与配图（含真实姓名，不入公开仓库）
+docs/doc/
