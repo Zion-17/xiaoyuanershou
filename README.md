@@ -29,8 +29,9 @@ pages/*  ──►  services/*.js  ──►  utils/api.js  ──►  云函数
 | `utils/config.js` | 云环境 ID、客服电话（全项目唯一来源） |
 | `cloudfunctions/api/` | 云函数：`index.js` 路由 + `lib.js` 公共能力 + `actions/*` 领域处理 |
 | `scripts/` | 自研静态检查与冒烟测试（见 TESTING.md） |
-| `docs/ppt/` | `make_deck.py` 生成答辩 PPT（`答辩PPT.pptx`、`slides.html`），`preview/` 为自查截图 |
-| `docs/` 根目录 | 课程交付文档（`*.docx` 仅本地保留，不入库） |
+| `docs/ppt/` | PPT 生成脚本（`make_deck.py`、`make_deck_v2.py`）、模板、答辩 PPT、脱敏版项目汇报与 `slides.html`；`preview/` 为自查截图 |
+| `docs/doc/` | 课程交付文档与生成脚本 `build_doc.py`（含个人信息，整目录仅本地保留） |
+| `docs/templates/` | 学校文档模板（`*.docx` 仅本地保留） |
 | `brainstorming/plans/` | 设计决策与改造计划存档 |
 
 **身份模型**：以 `openid` 为准。学号通过白名单校验并绑定 openid，此后该学号只能由绑定的微信登录。
@@ -268,7 +269,14 @@ await db.collection('chats').doc(id).update({ data: { mergedInto: grp.key, merge
 - 客服电话只从 `utils/config.js` 取。
 - 改动后跑一遍：`node scripts/check-refs.js && node scripts/check-bindings.js && node scripts/smoke.js`。
 
-## 六、已知限制
+## 六、文档与隐私
+
+- 公开仓库只保留代码、PPT 生成脚本与脱敏版材料；含真实姓名/学号的 `*.docx` 与 `docs/ppt/*含姓名*.pptx` 仅本地保留，已在 `.gitignore` 中忽略。
+- 脱敏版项目汇报由 `docs/ppt/make_deck_v2.py` 从 `ppt模板.pptx` 生成，成员统一显示为「同学 A–D」，可随时重建。
+- `utils/config.js` 与 `cloudfunctions/api/config.js` 中的客服电话、管理员学号、白名单均为占位值，部署时替换为实际值，不要提交真实配置。
+- 微信开发者工具的 `project.private.config.json` 属于本地私有配置，不纳入版本控制。
+
+## 七、已知限制
 
 - 站内消息依赖 `db.watch` 实时推送；若安全规则导致订阅失败，会自动降级为 3 秒轮询。
 - 商品列表分页 20 条/页，滚动加载。

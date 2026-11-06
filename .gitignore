@@ -5,6 +5,10 @@
 node_modules/
 miniprogram_npm/
 
+# Python 缓存（构建产物，不入库）
+__pycache__/
+*.pyc
+
 # 课程作业文档（正文含小组成员真实信息，不入公开仓库，本地保留）
 *.docx
 
@@ -13,3 +17,9 @@ docs/ppt/preview/
 
 # 课程作业文档生成脚本与配图（含真实姓名，不入公开仓库）
 docs/doc/
+
+# 含真实姓名的答辩终版（不入公开仓库，本地保留）
+docs/ppt/*含姓名*.pptx
+
+# 微信开发者工具本地私有配置
+project.private.config.json
